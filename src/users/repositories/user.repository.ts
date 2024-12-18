@@ -7,7 +7,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: typeof User,
   ) {}
 
   // async register(user: RegisterAuthDto): Promise<User> {
@@ -31,16 +31,16 @@ export class UserRepository {
   // }
 
   async findAll(): Promise<User[]> {
-    const newUsers = await this.userModel.find().exec();
+    const newUsers = await this.userModel.findAll();
     return newUsers;
   }
 
   findById(userId: string): Promise<User> {
-    return this.userModel.findOne({ _id: userId }).exec();
+    return this.userModel.findOne({ id: userId });
   }
 
   updateById(userId: string, userData: UpdateUserDto): Promise<User> {
-    return this.userModel.findOneAndUpdate({ _id: userId }, userData).exec();
+    return this.userModel;
   }
 
   deleteById(userId: string): Promise<User> {
