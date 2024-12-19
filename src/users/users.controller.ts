@@ -7,6 +7,9 @@ import {
   Delete,
   UseFilters,
   UseGuards,
+  Post,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -15,6 +18,8 @@ import { Role } from 'src/enums/role.enum';
 import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
 import { RoleGuard } from 'src/guards/role.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @UseGuards(RoleGuard)
 @UseGuards(AuthGuard)
@@ -22,6 +27,16 @@ import { AuthGuard } from 'src/guards/auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('profile')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({}),
+    }),
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return file;
+  }
 
   @Roles(Role.Admin, Role.SuperAdmin)
   @Get()
