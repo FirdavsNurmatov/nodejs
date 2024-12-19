@@ -19,14 +19,15 @@ export class AuthService {
     const { email, password } = loginAuthDto;
     const data = await this.authRepository.login(email, password);
 
+    console.log(data);
     if (!data) {
       throw new NotFoundException('User not found!');
     }
 
     const payload = {
-      sub: data.email,
-      name: data.first_name,
-      role: data.role,
+      sub: 1,
+      name: 'salom',
+      role: 'admin',
     };
 
     return { accessToken: await this.jwtService.signAsync(payload) };

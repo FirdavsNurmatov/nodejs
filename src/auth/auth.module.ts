@@ -3,14 +3,14 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './repositories/auth.repository';
 import { UsersModule } from 'src/users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/users/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/constants/jwt.constants';
+import { DatabaseModule } from 'src/database/database.module';
+import { authProviders } from './auth.providers';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    DatabaseModule,
     UsersModule,
     JwtModule.register({
       global: true,
@@ -23,6 +23,7 @@ import { jwtConstants } from 'src/constants/jwt.constants';
     { provide: 'authRepo', useClass: AuthRepository },
     AuthRepository,
     AuthService,
+    ...authProviders,
   ],
 })
 export class AuthModule {}

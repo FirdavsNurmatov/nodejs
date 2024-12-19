@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
-import { Model } from 'mongoose';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: typeof User,
+    @Inject('USER_REPOSITORY') private readonly userModel: typeof User,
   ) {}
 
   // async register(user: RegisterAuthDto): Promise<User> {
@@ -36,14 +34,14 @@ export class UserRepository {
   }
 
   findById(userId: string): Promise<User> {
-    return this.userModel.findOne({ id: userId });
+    return this.userModel.findByPk(userId);
   }
 
-  updateById(userId: string, userData: UpdateUserDto): Promise<User> {
-    return this.userModel;
+  updateById(userId: string, userData: UpdateUserDto) {
+    return this.userModel.update(userData, { where: { id: userId } });
   }
 
-  deleteById(userId: string): Promise<User> {
-    return this.userModel.findByIdAndDelete({ _id: userId }).exec();
+  deleteById(userId: string) {
+    return this.userModel.destroy({ where: { id: userId } });
   }
 }

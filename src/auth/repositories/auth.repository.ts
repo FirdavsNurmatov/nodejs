@@ -1,20 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RegisterAuthDto } from '../dto/register-auth.dto';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @Inject('AUTH_REPOSITORY') private readonly userModel: typeof User,
   ) {}
 
   async register(user: RegisterAuthDto): Promise<User> {
     try {
-      const newUser = new this.userModel(user);
-      await newUser.save();
-
+      console.log(user);
+      const newUser = this.userModel.create({ user });
       return newUser;
     } catch (error) {
       if (error.name === 'MongoServerError' && error.code === 11000) {
@@ -23,9 +20,9 @@ export class AuthRepository {
     }
   }
 
-  login(userEmail: string, userPassword: string): Promise<User> {
-    return this.userModel
-      .findOne({ email: userEmail, password: userPassword })
-      .exec();
+  login(userEmail: string, userPassword: string) {
+    return this.userModel.findAll({
+      where: { email: userEmail, password: userPassword },
+    });
   }
 }
