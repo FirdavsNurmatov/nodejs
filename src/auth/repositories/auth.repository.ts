@@ -1,31 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { RegisterAuthDto } from '../dto/register-auth.dto';
-import { User } from 'src/users/entities/user.entity';
+import { Inject, Injectable } from '@nestjs/common';
+import { SignUpAuthDto } from '../dto/signup-auth.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @Inject('AUTH_REPOSITORY') private readonly authModel: typeof User,
   ) {}
 
-  async register(user: RegisterAuthDto): Promise<User> {
-    try {
-      const newUser = new this.userModel(user);
-      await newUser.save();
-
-      return newUser;
-    } catch (error) {
-      if (error.name === 'MongoServerError' && error.code === 11000) {
-        throw new NotFoundException('USER alaready exists');
-      }
-    }
+  async signUp(user: SignUpAuthDto) {
+    return await this.authModel.create({
+      name: user.name,
+      username: user.username,
+      password: user.password,
+      age: user.age,
+      gender: user.gender,
+      status: user.status,
+      role: user.role,
+    });
   }
 
-  login(userEmail: string, userPassword: string): Promise<User> {
-    return this.userModel
-      .findOne({ email: userEmail, password: userPassword })
-      .exec();
+  async signIn(userName: string, userPassword: string) {
+    return await this.authModel.findAll({
+      where: { username: userName, password: userPassword },
+    });
   }
 }

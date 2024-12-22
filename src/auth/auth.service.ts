@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { LoginAuthDto } from './dto/login-auth.dto';
-import { RegisterAuthDto } from './dto/register-auth.dto';
-import { AuthRepository } from './repositories/auth.repository';
+import { SignUpAuthDto } from './dto/signup-auth.dto';
+import { SignInAuthDto } from './dto/signin-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { AuthRepository } from './repositories/auth.repository';
 
 @Injectable()
 export class AuthService {
@@ -11,24 +11,42 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerAuthDto: RegisterAuthDto) {
-    return this.authRepository.register(registerAuthDto);
+  async create(signUpAuthDto: SignUpAuthDto) {
+    const { dataValues } = await this.authRepository.signUp(signUpAuthDto);
+    delete dataValues.password;
+
+    return dataValues;
   }
 
-  async login(loginAuthDto: LoginAuthDto) {
-    const { email, password } = loginAuthDto;
-    const data = await this.authRepository.login(email, password);
+  async login(signInAuthDto: SignInAuthDto) {
+    const { username, password } = signInAuthDto;
+    const data = await this.authRepository.signIn(username, password);
 
-    if (!data) {
-      throw new NotFoundException('User not found!');
-    }
+    if (!data || data.length < 1) throw new NotFoundException();
+
+    delete data[0].password;
 
     const payload = {
-      sub: data.email,
-      name: data.first_name,
-      role: data.role,
+      sub: data[0].username,
+      role: data[0].role,
     };
 
     return { accessToken: await this.jwtService.signAsync(payload) };
   }
+
+  // findAll() {
+  //   return `This action returns all auth`;
+  // }
+
+  // findOne(id: number) {
+  //   return this.authRepository.findOne(id);
+  // }
+
+  // update(id: number, updateAuthDto: UpdateAuthDto) {
+  //   return this.authRepository.update(id, updateAuthDto);
+  // }
+
+  // remove(id: number) {
+  //   return this.authRepository.remove(id);
+  // }
 }
