@@ -56,7 +56,7 @@ export class SignUpAuthDto {
     description: 'User status',
     enum: UserStatus,
   })
-  status: UserStatus;
+  status?: UserStatus;
 
   @ApiProperty({
     type: String,

@@ -15,7 +15,7 @@ export class AuthService {
     const { dataValues } = await this.authRepository.signUp(signUpAuthDto);
     delete dataValues.password;
 
-    return dataValues;
+    return 'user created!';
   }
 
   async login(signInAuthDto: SignInAuthDto) {
