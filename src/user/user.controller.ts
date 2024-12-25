@@ -31,11 +31,6 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-  @Get('greet')
-  greet() {
-    return 'Hello world!';
-  }
-
   @Role(Roles.manager, Roles.teacher)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
