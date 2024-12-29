@@ -1,6 +1,10 @@
 import { Bot, session } from "grammy";
-import { startCommand } from "../command/index.js";
-import { continueConversation, hearAddKeyboard } from "../action/index.js";
+import { helpCommand, startCommand } from "../command/index.js";
+import {
+  continueConversation,
+  hearAddKeyboard,
+  helpMessage,
+} from "../action/index.js";
 import { conversations, createConversation } from "@grammyjs/conversations";
 // import { CommandGroup } from "@grammyjs/commands";
 
@@ -10,14 +14,15 @@ export const bot = new Bot(process.env.BOT_TOKEN);
 // myCommands.command("start", "Assalomu alaykum", (ctx) => ctx.reply("salom"));
 // bot.use(myCommands);
 const commands = [
-  { command: "start", description: "Start the bot" },
-  // { command: "help", description: "Get help" },
+  { command: "start", description: "Botni ishga tushurish" },
+  { command: "help", description: "Yordam" },
   // { command: "info", description: "Get bot information" },
 ];
 
 bot.api.setMyCommands(commands);
 
 bot.command("start", startCommand);
+bot.command("help", helpCommand);
 // bot.command("help", (ctx) =>
 //   ctx.reply(
 //     "Here is a list of commands:\n" +
@@ -33,9 +38,10 @@ bot.use(conversations());
 bot.use(createConversation(continueConversation));
 
 bot.command("start", startCommand);
-bot.command("help");
-bot.command("add");
+bot.command("help", helpCommand);
+// bot.command("add");
 bot.hears("Qo'shish +", hearAddKeyboard);
+bot.on("message", helpMessage);
 bot.on("message:text", async (ctx) => {
   await ctx.conversation.enter("continueConversation");
 });

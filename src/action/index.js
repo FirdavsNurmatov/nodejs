@@ -35,9 +35,18 @@ Tekst : ${value}`);
 
 👉@n14_firdavs_bot kalit so'z👈 
 shu jumlani Telegramdagi istagan chatga yozish orqali saqlangan ma'lumotni jo'natishingiz mumkin!`);
+
+    await updateUserById(userId, { key, value });
   } else if (answer.update.callback_query.data === "change") {
     await ctx.reply("just a minute...");
   }
+};
 
-  await updateUserById(userId, { key, value });
+export const helpMessage = async (ctx) => {
+  ctx.reply(`Iltimos, ma'lumot qo'shish uchun pastdagi Qo'shish tugmasini bosing. 
+
+Yoki yordam oling...
+
+/help
+👆`);
 };

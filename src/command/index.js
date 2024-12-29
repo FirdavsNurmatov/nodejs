@@ -18,3 +18,10 @@ export const startCommand = async (ctx) => {
 
 Ma'lumot qo'shish uchun pastdagi 'Qo'shish' tugmasini bosing va kalit so'z bering.`);
 };
+
+export const helpCommand = (ctx) => {
+  ctx.reply(`Buyruqlar: 
+/start - Botni qayta ishga tushirish
+/help - Yordam
+`);
+};
