@@ -33,8 +33,8 @@ bot.use(conversations());
 bot.use(createConversation(continueConversation));
 
 bot.command("start", startCommand);
-bot.command("help", startCommand);
-bot.command("add", startCommand);
+bot.command("help");
+bot.command("add");
 bot.hears("Qo'shish +", hearAddKeyboard);
 bot.on("message:text", async (ctx) => {
   await ctx.conversation.enter("continueConversation");

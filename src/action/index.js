@@ -1,7 +1,10 @@
+import { verifyInlineKeyboard } from "../keyboard/index.js";
 import { updateUserById } from "../utils/user.service.js";
 
 export const hearAddKeyboard = async (ctx) => {
-  await ctx.reply("Istagan ma'lumot turini menga jo'nating 🙂...");
+  await ctx.reply("Istagan ma'lumot turini menga jo'nating 🙂...", {
+    reply_markup: { remove_keyboard: true },
+  });
 };
 
 export const continueConversation = async (conversation, ctx) => {
@@ -17,9 +20,24 @@ Aynan shu kalit so'z orqali bu ma'lumotni chatda jo'natasiz. Shuning uchun, kali
   const key = ctx.msg.text;
   const value = data.update.message.text;
 
-  await updateUserById(userId, { key, value });
-
-  ctx.reply(`Kalit so'z : ${key} 
+  await ctx.reply(`Kalit so'z : ${key} 
 
 Tekst : ${value}`);
+
+  await ctx.reply(`Endi ma'lumot va kalit so'zni tasdiqlang!`, {
+    reply_markup: verifyInlineKeyboard,
+  });
+
+  const answer = await conversation.wait();
+
+  if (answer.update.callback_query.data === "verify") {
+    await ctx.reply(`Ma'lumot muvaffaqiyatli qo'shildi! 🥳 
+
+👉@n14_firdavs_bot kalit so'z👈 
+shu jumlani Telegramdagi istagan chatga yozish orqali saqlangan ma'lumotni jo'natishingiz mumkin!`);
+  } else if (answer.update.callback_query.data === "change") {
+    await ctx.reply("just a minute...");
+  }
+
+  await updateUserById(userId, { key, value });
 };
