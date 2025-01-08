@@ -2,17 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterAuthDto } from '../dto/register-auth.dto';
-import { User } from 'src/users/entities/user.entity';
+import { Auth } from '../entities/auth.entity';
 
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Auth.name) private readonly authModel: Model<Auth>,
   ) {}
 
-  async register(user: RegisterAuthDto): Promise<User> {
+  async register(user: RegisterAuthDto): Promise<Auth> {
     try {
-      const newUser = new this.userModel(user);
+      const newUser = new this.authModel(user);
       await newUser.save();
 
       return newUser;
@@ -23,8 +23,8 @@ export class AuthRepository {
     }
   }
 
-  login(userEmail: string, userPassword: string): Promise<User> {
-    return this.userModel
+  login(userEmail: string, userPassword: string): Promise<Auth> {
+    return this.authModel
       .findOne({ email: userEmail, password: userPassword })
       .exec();
   }

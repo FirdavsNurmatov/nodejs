@@ -2,10 +2,10 @@ import { HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Role } from 'src/enums/role.enum';
 
-export type UserDocument = HydratedDocument<User>;
+export type AuthDocument = HydratedDocument<Auth>;
 
 @Schema()
-export class User {
+export class Auth {
   @Prop({ min: 2 })
   first_name: string;
 
@@ -22,4 +22,4 @@ export class User {
   role: Role;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const AuthSchema = SchemaFactory.createForClass(Auth);
