@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Order } from './entities/order.entity';
+import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class OrderService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
+
+  async create(createOrderDto: CreateOrderDto) {
+    const data = await this.orderRepository.save(createOrderDto);
+
+    return data;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll() {
+    const data = await this.orderRepository.find();
+    if (data.length === 0) {
+      throw new NotFoundException('No data found');
+    }
+    return data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: number) {
+    const data = await this.orderRepository.findOneBy({ id });
+    if (!data) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return data;
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    const data = await this.orderRepository.update(id, updateOrderDto);
+    if (data.affected === 0) {
+      throw new NotFoundException('Order not found');
+    }
+    return 'Order updated successfully';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: number) {
+    const data = await this.orderRepository.delete(id);
+    if (data.affected === 0) {
+      throw new NotFoundException('Order not found');
+    }
+    return 'Order deleted successfully';
   }
 }

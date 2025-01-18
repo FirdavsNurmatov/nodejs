@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from './entities/product.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
+
+  async create(createProductDto: CreateProductDto) {
+    return await this.productRepository.save(createProductDto);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll() {
+    const allData = await this.productRepository.find();
+    if (allData.length === 0) {
+      throw new NotFoundException('No data found');
+    }
+
+    return allData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const data = await this.productRepository.findOneBy({ id });
+    if (!data) {
+      throw new NotFoundException('Data not found');
+    }
+
+    return data;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const updatedData = await this.productRepository.update(
+      id,
+      updateProductDto,
+    );
+    if (updatedData.affected === 0) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return 'Data updated successfully';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const data = await this.productRepository.delete(id);
+    if (data.affected === 0) {
+      throw new NotFoundException('Product not found');
+    }
+    
+    return "Product deleted successfully";
   }
 }

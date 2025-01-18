@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderProductDto } from './dto/create-order_product.dto';
 import { UpdateOrderProductDto } from './dto/update-order_product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OrderProduct } from './entities/order_product.entity';
+import { Repository } from 'typeorm';
+import { Product } from 'src/product/entities/product.entity';
+import { Order } from 'src/order/entities/order.entity';
 
 @Injectable()
 export class OrderProductService {
-  create(createOrderProductDto: CreateOrderProductDto) {
-    return 'This action adds a new orderProduct';
+  constructor(
+    @InjectRepository(OrderProduct)
+    private readonly orderProductRepository: Repository<OrderProduct>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+  ) {}
+
+  async create(createOrderProductDto: CreateOrderProductDto) {
+    const data = await this.orderProductRepository.save(createOrderProductDto);
+
+    return data;
   }
 
-  findAll() {
-    return `This action returns all orderProduct`;
+  async findAll() {
+    const data = await this.orderProductRepository.find();
+    if (data.length === 0) {
+      throw new NotFoundException('No data found');
+    }
+
+    return data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} orderProduct`;
+  async findOne(id: number) {
+    const data = await this.orderProductRepository.findOneBy({ id });
+    if (!data) {
+      throw new NotFoundException('Order product not found');
+    }
+
+    return data;
   }
 
-  update(id: number, updateOrderProductDto: UpdateOrderProductDto) {
-    return `This action updates a #${id} orderProduct`;
+  async update(id: number, updateOrderProductDto: UpdateOrderProductDto) {
+    const data = await this.orderProductRepository.update(
+      id,
+      updateOrderProductDto,
+    );
+    if (data.affected === 0) {
+      throw new NotFoundException('Order product not found');
+    }
+
+    return 'Order product updated successfully';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} orderProduct`;
+  async remove(id: number) {
+    const data = await this.orderProductRepository.delete(id);
+    if (data.affected === 0) {
+      throw new NotFoundException('Order product not found');
+    }
+    return 'Order product deleted successfully';
   }
 }
