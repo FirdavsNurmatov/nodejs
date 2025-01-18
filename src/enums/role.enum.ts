@@ -3,3 +3,9 @@ export enum Role {
   Admin = 'admin',
   SuperAdmin = 'superadmin',
 }
+
+export enum Status {
+  Pending = 'pending',
+  Completed = 'completed',
+  Cancelled = 'cancelled',
+}
