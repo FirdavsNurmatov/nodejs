@@ -15,7 +15,7 @@ export class Product {
   info: string;
 
   @Column()
-  is_active: boolean;
+  is_active?: boolean;
 
   @Column()
   quantity: number;

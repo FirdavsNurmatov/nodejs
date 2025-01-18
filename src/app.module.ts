@@ -6,6 +6,9 @@ import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './order_product/order_product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { Product } from './product/entities/product.entity';
+import { Order } from './order/entities/order.entity';
+import { OrderProduct } from './order_product/entities/order_product.entity';
 
 @Module({
   imports: [
@@ -16,7 +19,7 @@ import { User } from './user/entities/user.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'postgres',
-      entities: [User],
+      entities: [User, Product, Order, OrderProduct],
       synchronize: true,
     }),
     AuthModule,

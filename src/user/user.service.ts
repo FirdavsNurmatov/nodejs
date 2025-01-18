@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { Pagination } from '../pagination/pagination';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,15 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     return await this.userRepository.save(createUserDto);
+  }
+
+  async pagination(pagination: Pagination) {
+    const [users, total] = await this.userRepository.findAndCount({
+      skip: pagination.offset,
+      take: pagination.limit,
+    });
+
+    return { users, total };
   }
 
   async findAll() {

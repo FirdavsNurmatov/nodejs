@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { Pagination } from 'src/pagination/pagination';
 
 @Injectable()
 export class ProductService {
@@ -14,6 +15,15 @@ export class ProductService {
 
   async create(createProductDto: CreateProductDto) {
     return await this.productRepository.save(createProductDto);
+  }
+
+  async pagination(pagination: Pagination) {
+    const [product, total] = await this.productRepository.findAndCount({
+      skip: pagination.offset,
+      take: pagination.limit,
+    });
+
+    return { product, total };
   }
 
   async findAll() {
@@ -51,7 +61,7 @@ export class ProductService {
     if (data.affected === 0) {
       throw new NotFoundException('Product not found');
     }
-    
-    return "Product deleted successfully";
+
+    return 'Product deleted successfully';
   }
 }
